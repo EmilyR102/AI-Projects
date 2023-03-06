@@ -59,10 +59,17 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = util.Counter() # A Counter is a dict with default 0
         self.runValueIteration()
 
-    def runValueIteration(self):
+    def runValueIteration(self):  # sourcery skip: remove-unreachable-code
         # Write value iteration code here
         "*** BEGIN YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        mdp = self.mdp
+
+        for _ in range(self.iterations):
+            for s in mdp.getStates():
+                bestA = self.getAction(s)
+                print("bestA", bestA)
+                self.values[s] = 0 if bestA is None else self.getQValue(s, bestA)
+                print(self.values[s])
         "*** END YOUR CODE HERE ***"
 
     def getValue(self, state):
@@ -73,16 +80,29 @@ class ValueIterationAgent(ValueEstimationAgent):
 
 
     def computeQValueFromValues(self, state, action):
+        # sourcery skip: remove-unreachable-code
         """
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        q = 0
+
+        if action is not None:
+            mdp = self.mdp
+            T = mdp.getTransitionStatesAndProbs(state, action)
+
+            for newS, prob in T:
+                R = mdp.getReward(state, action, newS)
+                dV = self.discount*self.values[newS]
+                q+= prob*(R + dV)
+
+        return q
         "*** END YOUR CODE HERE ***"
-        
 
     def computeActionFromValues(self, state):
+        # sourcery skip: for-index-underscore, remove-unreachable-code
         """
           The policy is the best action in the given state
           according to the values currently stored in self.values.
@@ -92,7 +112,18 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        mdp = self.mdp
+
+        if mdp.isTerminal(state): return None
+    
+        actions = mdp.getPossibleActions(state)
+        Q = util.Counter()
+
+        for a in actions:
+            Q[a] = self.getQValue(state, a)
+
+        return Q.argMax()
         "*** END YOUR CODE HERE ***"
 
     def getPolicy(self, state):
