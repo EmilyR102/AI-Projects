@@ -62,14 +62,15 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):  # sourcery skip: remove-unreachable-code
         # Write value iteration code here
         "*** BEGIN YOUR CODE HERE ***"
-        mdp = self.mdp
+        states = self.mdp.getStates()
 
         for _ in range(self.iterations):
-            for s in mdp.getStates():
+            next_vals = util.Counter()
+            for s in states:
                 bestA = self.getAction(s)
-                print("bestA", bestA)
-                self.values[s] = 0 if bestA is None else self.getQValue(s, bestA)
-                print(self.values[s])
+                next_vals[s] = 0 if bestA is None else self.getQValue(s, bestA)
+
+            self.values = next_vals
         "*** END YOUR CODE HERE ***"
 
     def getValue(self, state):
@@ -88,13 +89,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** BEGIN YOUR CODE HERE ***"
 
         q = 0
-
         if action is not None:
-            mdp = self.mdp
-            T = mdp.getTransitionStatesAndProbs(state, action)
-
+            T = self.mdp.getTransitionStatesAndProbs(state, action)
             for newS, prob in T:
-                R = mdp.getReward(state, action, newS)
+                R = self.mdp.getReward(state, action, newS)
                 dV = self.discount*self.values[newS]
                 q+= prob*(R + dV)
 
@@ -113,11 +111,9 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** BEGIN YOUR CODE HERE ***"
 
-        mdp = self.mdp
-
-        if mdp.isTerminal(state): return None
+        if self.mdp.isTerminal(state): return None
     
-        actions = mdp.getPossibleActions(state)
+        actions = self.mdp.getPossibleActions(state)
         Q = util.Counter()
 
         for a in actions:
