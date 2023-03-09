@@ -162,7 +162,14 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** BEGIN YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        states = self.mdp.getStates()
+        num_states = len(states)
+        iter_states = [states[i%num_states] for i in range(self.iterations)]
+
+        for s in iter_states:
+            bestA = self.getAction(s)
+            self.values[s] = 0 if bestA is None else self.getQValue(s, bestA)
+
         "*** END YOUR CODE HERE ***"
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
@@ -184,7 +191,44 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
     def runValueIteration(self):
         "*** BEGIN YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def updateQueue(q, lst, isPred=False):
+            for s in lst:
+                bestA = self.getAction(s)
+                diff = abs(self.values[s] - self.getQValue(s, bestA))
+                
+                if (
+                    (isPred and (diff > self.theta))
+                    or (not isPred)
+                ):
+                    q.update(s,-diff)
+
+        all_states = self.mdp.getStates()
+        preds = {s: set() for s in all_states} #filter out terminal states
+
+        for p, _ in preds.items():
+            actions = self.mdp.getPossibleActions(p)
+            for a in actions: 
+                nextStates = self.mdp.getTransitionStatesAndProbs(p, a)
+
+                for nextS, prob in nextStates: 
+                    if prob > 0 and not self.mdp.isTerminal(nextS): 
+                        preds[nextS].add(p) 
+
+        P = util.PriorityQueue()
+
+        updateQueue(P, preds)
+
+        for _ in range(self.iterations):
+            if P.isEmpty(): break
+            s = P.pop()
+
+            if not self.mdp.isTerminal(s):
+                bestA = self.getAction(s)
+                self.values[s] = self.getQValue(s, bestA)
+
+            updateQueue(P, list(preds[s]), True)
+
         "*** END YOUR CODE HERE ***"
         
 
