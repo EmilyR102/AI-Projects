@@ -314,7 +314,7 @@ class Counter(dict):
 
     def __getitem__(self, idx):
         self.setdefault(idx, 0)
-        return dict.__getitem__(self, idx)
+        return dicetitem__(self, idx)
 
     def incrementAll(self, keys, count):
         """
