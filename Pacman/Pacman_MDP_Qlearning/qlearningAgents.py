@@ -17,6 +17,7 @@ from learningAgents import ReinforcementAgent
 from featureExtractors import *
 
 import random,util,math
+import collections
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -205,9 +206,12 @@ class ApproximateQAgent(PacmanQAgent):
         """
         "*** BEGIN YOUR CODE HERE ***"
 
+        if action is None: return 0.0
+        
         feats = self.featExtractor.getFeatures(state, action)
 
-        return sum(self.weights[f]*feats[f] for f in feats)
+        return sum(self.getWeights()[f]*feats[f] for f in feats)
+        
         
         "*** END YOUR CODE HERE ***"
 
@@ -216,13 +220,16 @@ class ApproximateQAgent(PacmanQAgent):
            Should update your weights based on transition
         """
         "*** BEGIN YOUR CODE HERE ***"
+
         feats = self.featExtractor.getFeatures(state, action)
 
+        diff = (reward + (self.discount*(self.getValue(nextState)))) - self.getQValue(state, action)
+
         for f in feats:
-            diff = (reward + (self.discount*(self.getValue(nextState)))) - self.getQValue(state, action)
             self.weights[f] += self.alpha*diff*feats[f]
 
         return self.weights
+    
         "*** END YOUR CODE HERE ***"
 
     def final(self, state):
