@@ -75,11 +75,15 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** BEGIN YOUR CODE HERE ***"
-        raiseNotDefined()
+        total = self.total()
+
+        if total != 0:
+            for k, v in self.items():
+                self[k] = v/total
         "*** END YOUR CODE HERE ***"
         
 
-    def sample(self):
+    def sample(self):  # sourcery skip: avoid-builtin-shadow
         """
         Draw a random sample from the distribution and return the key, weighted
         by the values associated with each key.
@@ -101,7 +105,20 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** BEGIN YOUR CODE HERE ***"
-        raiseNotDefined()
+
+        self.normalize()
+        u = random.random()
+        cum_weights = []
+        s = 0
+        
+        for w in self.values():
+            s+=w
+            cum_weights+=[s]
+
+        for ind, w in enumerate(cum_weights):
+            if u < w: #return key  category ind if less than w
+                return list(self.keys())[ind]
+
         "*** END YOUR CODE HERE ***"
 
 
