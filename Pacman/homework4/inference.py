@@ -311,8 +311,9 @@ class ExactInference(InferenceModule):
         jailPos = self.getJailPosition()
 
         for ghostPos in self.allPositions:
-            self.beliefs[ghostPos] = self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
+            self.beliefs[ghostPos] *= self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
 
+        self.beliefs.normalize()
         "*** END YOUR CODE HERE ***"
 
 
@@ -326,7 +327,17 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        raiseNotDefined()
+
+        newBeliefs = DiscreteDistribution()
+        allPos = self.allPositions
+
+        for newPos in allPos:
+            for oldPos in allPos:
+                #transition probability distribution from oldPos
+                newPosDist = self.getPositionDistribution(gameState, oldPos)
+                newBeliefs[newPos] += self.beliefs[oldPos]*newPosDist[newPos]
+
+        self.beliefs = newBeliefs
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
