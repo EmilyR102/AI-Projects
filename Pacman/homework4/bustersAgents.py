@@ -131,7 +131,7 @@ class GreedyBustersAgent(BustersAgent):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
 
-    def chooseAction(self, gameState):
+    def chooseAction(self, gameState):  # sourcery skip: identity-comprehension
         """
         First computes the most likely position of each ghost that has
         not yet been captured, then chooses an action that brings
@@ -144,5 +144,33 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** BEGIN YOUR CODE HERE ***"
+        # don't need to use observeUpdate or elapseTime
+
+        def most_likely(dists):
+            most_likely = {}
+            for i, ghostDist in enumerate(dists):
+                max_belief = -float('inf')
+                best_pos = None
+                for pos, belief in ghostDist.items():
+                    
+                    if max_belief == max(max_belief, belief):
+                        best_pos = pos
+                    
+                most_likely[i] = best_pos
+
+            return most_likely
+
+        for 
+        min(self.distancer.getDistance(pacmanPosition, ghost) for ghost in most_likely)
+        
+        successorPosition = Actions.getSuccessor(position, action)
+
+        # maxBelief = max(livingGhostPositionDistributions)
+
+        # bestGhost = livingGhostPositionDistributions.index(maxBelief)
+
+
+
+
         "*** END YOUR CODE HERE ***"
         
