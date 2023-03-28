@@ -406,7 +406,8 @@ class ParticleFilter(InferenceModule):
         """
         "*** BEGIN YOUR CODE HERE ***"
 
-        particles = {p: 0 for p in self.particles}
+        prob = 1/len(self.particles)
+        particles = {p: prob for p in self.particles}
         beliefDist = DiscreteDistribution(particles)
         beliefDist.normalize()
         return beliefDist
