@@ -146,31 +146,24 @@ class GreedyBustersAgent(BustersAgent):
         "*** BEGIN YOUR CODE HERE ***"
         # don't need to use observeUpdate or elapseTime
 
-        def most_likely(dists):
-            most_likely = {}
-            for i, ghostDist in enumerate(dists):
-                max_belief = -float('inf')
-                best_pos = None
-                for pos, belief in ghostDist.items():
-                    
-                    if max_belief == max(max_belief, belief):
-                        best_pos = pos
-                    
-                most_likely[i] = best_pos
+        most_likely = [ghostDist.argMax() for ghostDist in livingGhostPositionDistributions]
 
-            return most_likely
+        distances = [self.distancer.getDistance(pacmanPosition, ghost) for ghost in most_likely]
 
-        for 
-        min(self.distancer.getDistance(pacmanPosition, ghost) for ghost in most_likely)
-        
-        successorPosition = Actions.getSuccessor(position, action)
+        closestInd = min(range(len(distances)), key = distances.__getitem__)
 
-        # maxBelief = max(livingGhostPositionDistributions)
+        closestGhost = most_likely[closestInd]
 
-        # bestGhost = livingGhostPositionDistributions.index(maxBelief)
+        bestAction = Directions.STOP 
+        bestDist = float('inf')
 
-
-
-
+        for a in legal:
+            succPos = Actions.getSuccessor(pacmanPosition, a)
+            newDist = self.distancer.getDistance(succPos, closestGhost)
+            bestDist = min(bestDist, newDist)
+            if bestDist == newDist:
+                bestAction = a
+            
+        return bestAction
         "*** END YOUR CODE HERE ***"
         
