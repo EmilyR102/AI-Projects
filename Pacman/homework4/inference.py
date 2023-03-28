@@ -405,7 +405,9 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        beliefDist = DiscreteDistribution(self.particles)
+
+        particles = {p: 0 for p in self.particles}
+        beliefDist = DiscreteDistribution(particles)
         beliefDist.normalize()
         return beliefDist
         "*** END YOUR CODE HERE ***"
