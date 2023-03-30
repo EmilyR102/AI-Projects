@@ -310,7 +310,7 @@ class ExactInference(InferenceModule):
         pacmanPos = gameState.getPacmanPosition()
         jailPos = self.getJailPosition()
 
-        for ghostPos in self.allPositions:
+        for ghostPos in self.allPositions: #Why again?
             self.beliefs[ghostPos] *= self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
 
         self.beliefs.normalize()
@@ -369,8 +369,6 @@ class ParticleFilter(InferenceModule):
         for p in self.legalPositions:
             self.particles.extend([p]*particlesPerPosition)
 
-        # print("drfafewafa")
-
         "*** END YOUR CODE HERE ***"
 
     def observeUpdate(self, observation, gameState):
@@ -386,32 +384,19 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        PacmanPos = gameState.getPacmanPosition()
-        JailPos = self.getJailPosition()
-        # print("PacmanPos", PacmanPos)
-        # print("particles", self.particles[:5])
-        # print("Is a Tuple?", type(self.particles) is 'tuple')
-        for i in [(9, 2)]:
-            print(i)
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
 
+        weight_dist = DiscreteDistribution()
 
-        if(len(self.particles) < 5):
-            for p in self.particles:
-                "Entered for p in self.particles"
-                print(p)
-                print(self.particles)
-                print("TYPE", type(self.particles))
-        else:
-            print("TYPE After if(len(self.particles) < 5",type(self.particles))
-
-        weights = {p: self.getObservationProb(observation, PacmanPos, p, JailPos) for p in self.particles}
-        weight_dist = DiscreteDistribution(weights)
-        # print(weight_dist)
+        for p in self.particles:
+            weight_dist[p]+= self.getObservationProb(observation, pacmanPos, p, jailPos)
 
         if weight_dist.total(): #if total>0
-            self.particles = weight_dist.sample()
+            self.particles = [weight_dist.sample() for _ in range(self.numParticles)]
         else:
             self.initializeUniformly(gameState)
+
         "*** END YOUR CODE HERE ***"
     
     def elapseTime(self, gameState):
@@ -420,7 +405,16 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        raiseNotDefined()
+        # set self.particles to self.get pos dist then sample that
+        # Do it for all particles.
+        newParticles = []
+
+        for oldPos in self.particles:
+            dist=self.getPositionDistribution(gameState, oldPos)
+            sample = [dist.sample()]
+            newParticles += sample
+            
+        self.particles = newParticles
         "*** END YOUR CODE HERE ***"
     
     def getBeliefDistribution(self):
@@ -433,9 +427,12 @@ class ParticleFilter(InferenceModule):
         """
         "*** BEGIN YOUR CODE HERE ***"
 
-        prob = 1/len(self.particles)
-        particles = {p: prob for p in self.particles}
-        beliefDist = DiscreteDistribution(particles)
+        oldProb = 1
+        # particles = {p: prob for p in self.particles}
+        beliefDist = DiscreteDistribution({})
+        # beliefDist = DiscreteDistribution(particles)
+        for p in self.particles:
+            beliefDist[p] = beliefDist.get(p,0) + oldProb
         beliefDist.normalize()
         return beliefDist
         "*** END YOUR CODE HERE ***"
@@ -514,6 +511,17 @@ class JointParticleFilter(ParticleFilter):
 
             # now loop through and update each entry in newParticle...
             "*** BEGIN YOUR CODE HERE ***"
+
+                    #q10 llop throughall particles in self.particles
+        # have new particles list
+        # have a tmp variable for new particle
+        # cast old particle into new particle
+        # in the previous ghostpos = previous particle pos
+        # for each ghostpos get new posDist and new pos
+        # set new particle of that ghost to new pos
+        # then append a tuple version of that new particle pos to the  new particles list
+        # set self.particles = new particles list 
+
             raiseNotDefined()
             """*** END YOUR CODE HERE ***"""
             newParticles.append(tuple(newParticle))
