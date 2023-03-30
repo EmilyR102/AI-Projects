@@ -389,11 +389,15 @@ class ParticleFilter(InferenceModule):
         # print("PacmanPos", PacmanPos)
         # print("particles", self.particles[:5])
         # print("Is a Tuple?", type(self.particles) is 'tuple')
-        print(type(self.particles))
+        
         if(len(self.particles) < 5):
             for p in self.particles:
+                "Entered for p in self.particles"
                 print(p)
+                print(self.particles)
                 print("TYPE", type(self.particles))
+        else:
+            print("TYPE After if(len(self.particles) < 5",type(self.particles))
 
         weights = {p: self.getObservationProb(observation, PacmanPos, p, JailPos) for p in self.particles}
         weight_dist = DiscreteDistribution(weights)
