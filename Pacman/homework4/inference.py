@@ -369,6 +369,8 @@ class ParticleFilter(InferenceModule):
         for p in self.legalPositions:
             self.particles.extend([p]*particlesPerPosition)
 
+        # print("drfafewafa")
+
         "*** END YOUR CODE HERE ***"
 
     def observeUpdate(self, observation, gameState):
@@ -389,7 +391,10 @@ class ParticleFilter(InferenceModule):
         # print("PacmanPos", PacmanPos)
         # print("particles", self.particles[:5])
         # print("Is a Tuple?", type(self.particles) is 'tuple')
-        
+        for i in [(9, 2)]:
+            print(i)
+
+
         if(len(self.particles) < 5):
             for p in self.particles:
                 "Entered for p in self.particles"
