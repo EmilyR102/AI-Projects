@@ -388,17 +388,21 @@ class ParticleFilter(InferenceModule):
         JailPos = self.getJailPosition()
         # print("PacmanPos", PacmanPos)
         # print("particles", self.particles[:5])
-        print("Is a Tuple?", type(self.particles) is 'tuple')
+        # print("Is a Tuple?", type(self.particles) is 'tuple')
+        print(type(self.particles))
+        if(len(self.particles) < 5):
+            for p in self.particles:
+                print(p)
+                print("TYPE", type(self.particles))
+
         weights = {p: self.getObservationProb(observation, PacmanPos, p, JailPos) for p in self.particles}
         weight_dist = DiscreteDistribution(weights)
         # print(weight_dist)
 
-        if not any(weights.values()): #if no values greater than 0
-            self.initializeUniformly(gameState)
-        else:
+        if weight_dist.total(): #if total>0
             self.particles = weight_dist.sample()
-
-        
+        else:
+            self.initializeUniformly(gameState)
         "*** END YOUR CODE HERE ***"
     
     def elapseTime(self, gameState):
