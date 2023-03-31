@@ -463,7 +463,11 @@ class JointParticleFilter(ParticleFilter):
         """
         self.particles = []
         "*** BEGIN YOUR CODE HERE ***"
-        raiseNotDefined()
+        #Get all the possible positions for each ghost; place in a tuple
+        ghostPositions = (itertools.product(self.legalPositions, repeat = self.numGhosts))
+        
+        self.particles = list(ghostPositions)
+        
         "*** END YOUR CODE HERE ***"
 
     def addGhostAgent(self, agent):
