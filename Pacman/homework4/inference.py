@@ -387,13 +387,13 @@ class ParticleFilter(InferenceModule):
         pacmanPos = gameState.getPacmanPosition()
         jailPos = self.getJailPosition()
 
-        weight_dist = DiscreteDistribution()
+        weightDist = DiscreteDistribution()
 
         for p in self.particles:
-            weight_dist[p]+= self.getObservationProb(observation, pacmanPos, p, jailPos)
+            weightDist[p]+= self.getObservationProb(observation, pacmanPos, p, jailPos)
 
-        if weight_dist.total(): #if total>0
-            self.particles = [weight_dist.sample() for _ in range(self.numParticles)]
+        if weightDist.total(): #if total>0
+            self.particles = [weightDist.sample() for _ in range(self.numParticles)]
         else:
             self.initializeUniformly(gameState)
 
@@ -501,7 +501,26 @@ class JointParticleFilter(ParticleFilter):
         the DiscreteDistribution may be useful.
         """
         "*** BEGIN YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacmanPos = gameState.getPacmanPosition()
+
+        weight = {p: 0 for p in self.particles}
+        weightDist = DiscreteDistribution(weight) 
+
+        for p in self.particles:
+            w = 1
+            for ind, ghostPos in enumerate(p):
+                jailPos = self.getJailPosition(ind)
+                w*= self.getObservationProb(observation[ind], pacmanPos, ghostPos, jailPos)
+            
+            if p not in weightDist:
+                weightDist[p] = 0
+
+            weightDist[p] += w
+
+        if weightDist.total(): #if total>0
+            self.particles = [weightDist.sample() for _ in range(self.numParticles)]
+        else:
+            self.initializeUniformly(gameState)
         "*** END YOUR CODE HERE ***"
         
     def elapseTime(self, gameState):
