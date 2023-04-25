@@ -51,11 +51,6 @@ class PerceptronModel(object):
         batch_size = 1
         misclass = True
 
-        # print("dataset\n", dataset)
-        # help(dataset)
-
-        print("DATASET", )
-
         while misclass:
             incorrect = False
             for x,y in dataset.iterate_once(batch_size):
@@ -78,6 +73,29 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** BEGIN YOUR CODE HERE ***"
+
+        # f(x) = ReLU(x * W1 + b1) * W2 + b2
+        # feat  |    dim
+        # x     |  batch x in
+        # w1    |  i x h1 
+        # b1    |  1 x h1
+        # w2    |  h1 x out
+        # b2    |  1 x out
+
+        # h = hidden, b = bias, w = weight
+
+        self.batch_size = 10 #num inputs
+        self.alpha = .01
+        self.input= 1
+        self.output = 1
+
+        self.h1 = 50
+        self.w1 = nn.Parameter(self.input, self.h1)
+        self.b1 = nn.Parameter(1, self.h1)
+
+        self.w2 = nn.Parameter(self.h1, self.output)
+        self.b2 = nn.Parameter(1, self.output)
+
         "*** END YOUR CODE HERE ***"
         
 
@@ -91,6 +109,13 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** BEGIN YOUR CODE HERE ***"
+        def lin_bias(x, w, b):
+            return nn.AddBias(nn.Linear(x, w), b)
+
+        h1 = nn.ReLU(lin_bias(x, self.w1, self.b1))
+
+        #return the predictions
+        return lin_bias(h1, self.w2, self.b2)
         "*** END YOUR CODE HERE ***"
 
 
@@ -105,6 +130,7 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** BEGIN YOUR CODE HERE ***"
+        return nn.SquareLoss(self.run(x),y)
         "*** END YOUR CODE HERE ***"
 
 
@@ -113,6 +139,23 @@ class RegressionModel(object):
         Trains the model.
         """
         "*** BEGIN YOUR CODE HERE ***"
+        
+        high_loss = True
+
+        while high_loss:
+            high = False
+            for x,y in dataset.iterate_once(self.batch_size):
+                loss = self.get_loss(x, y)
+                
+                if nn.as_scalar(loss) > .02:
+                    high = True
+                    gw1, gb1, gw2, gb2 = nn.gradients(loss, [self.w1, self.b1, self.w2, self.b2])
+                    self.w1.update(gw1, -self.alpha)
+                    self.b1.update(gb1, -self.alpha)
+                    self.w2.update(gw2, -self.alpha)
+                    self.b2.update(gb2, -self.alpha)
+
+            high_loss = high
         "*** END YOUR CODE HERE ***"
 
 class DigitClassificationModel(object):
